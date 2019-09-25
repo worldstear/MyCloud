@@ -28,11 +28,13 @@ public class UserController {
             Cookie cookie = new Cookie("user_token", loginUser.getUserToken());
             cookie.setMaxAge(60*60*24*30);
             response.addCookie(cookie);
-            request.getSession().setAttribute("loginUser",loginUser);
+            request.setAttribute("loginUser",loginUser);
             return "index";
         }else{
             return "/";
         }
     }
+
+
 
 }
