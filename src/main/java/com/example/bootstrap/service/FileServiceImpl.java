@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -31,29 +30,31 @@ public class FileServiceImpl implements FileService{
     @Override
     public boolean uploadFile(MultipartFile file, HttpServletRequest request) {
         try {
+            User user = (User)request.getSession().getAttribute("loginUser");
             String originalFilename = file.getOriginalFilename();
             String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
             String fileNameUUID = UUID.randomUUID().toString();
-            file.transferTo(new File(fileupload+fileNameUUID+suffix));
-            //将上传的文件记录到数据库中
-            FilePojo fileUpload = new FilePojo();
-            fileUpload.setFileUploadUUID(fileNameUUID);
-            fileUpload.setOriginalFilename(originalFilename);
-            fileUpload.setSuffix(suffix);
+            File uploadFile = new File(fileupload + user.getUsername() + "/" + fileNameUUID + suffix);
+            if(!uploadFile.exists()){
+                if(uploadFile.mkdirs()){
+                    file.transferTo(uploadFile);
+                    //将上传的文件记录到数据库中
+                    FilePojo fileUpload = new FilePojo();
+                    fileUpload.setFileUploadUUID(fileNameUUID);
+                    fileUpload.setOriginalFilename(originalFilename);
+                    fileUpload.setSuffix(suffix);
 
-            Cookie[] cookies = request.getCookies();
-            String userToken = "";
-            for (Cookie cookie: cookies) {
-                if(cookie.getName().equals("user_token")){
-                    userToken = cookie.getValue();
+                    fileUpload.setUploadUser(user.getUsername());
+                    long createdTime = System.currentTimeMillis();
+                    fileUpload.setUploadTime(new Date(createdTime));
+                    fileUpload.setGMT_created(String.valueOf(createdTime));
+                    fileMapper.insertNewFile(fileUpload);
+                }else {//无法创建目录
+                    return false;
                 }
             }
-            User user = loginService.checkLogin(userToken);
-            fileUpload.setUploadUser(user.getUsername());
-            long createdTime = System.currentTimeMillis();
-            fileUpload.setUploadTime(new Date(createdTime));
-            fileUpload.setGMT_created(String.valueOf(createdTime));
-            fileMapper.insertNewFile(fileUpload);
+
+
         } catch (IOException e) {
             logger.error(e.getMessage());
             return false;
@@ -72,10 +73,11 @@ public class FileServiceImpl implements FileService{
      * @param response response写出到外面
      */
     @Override
-    public void downloadFile(Integer fileId, HttpServletResponse response) {
+    public void downloadFile(Integer fileId, HttpServletResponse response,HttpServletRequest request) {
+        User loginUser = (User)request.getSession().getAttribute("loginUser");
         String fileName = fileMapper.getFileNameById(fileId);
         response.setHeader("Content-Disposition", "attachment;fileName=" + fileName);
-        File file = new File(fileupload+fileName);
+        File file = new File(fileupload+loginUser.getUsername()+"/"+fileName);
         System.out.println(file.getAbsolutePath());
         FileInputStream fis = null;
         ServletOutputStream outputStream = null;

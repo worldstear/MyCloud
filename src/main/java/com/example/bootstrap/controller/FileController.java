@@ -39,14 +39,15 @@ public class FileController {
         //System.out.println("username = " + username);
         List<FilePojo> filePojos = fileService.selectFileByUsername(username);
         request.setAttribute("filePojos",filePojos);
-        System.out.println(filePojos);
+        //System.out.println(filePojos);
         return "/index";
     }
     @GetMapping("/download/{fileId}")
     @ResponseBody
-    public void fileDownload(@PathVariable("fileId") Integer fileId, HttpServletResponse response){
+    public void fileDownload(@PathVariable("fileId") Integer fileId, HttpServletResponse response,HttpServletRequest request){
+        //设置头
         response.setContentType("application/octet-stream");
         response.setHeader("content-type", "application/octet-stream");
-        fileService.downloadFile(fileId,response);
+        fileService.downloadFile(fileId,response,request);
     }
 }

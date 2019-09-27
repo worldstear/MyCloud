@@ -14,7 +14,7 @@
 
 
 	<div th:include="leftMenu :: left"></div>
-		<div class="col-xs-9">
+		<div class="col-xs-10">
             <table class="table">
                 <tr>
                     <th>#</th>
@@ -22,8 +22,8 @@
                     <th>上传时间</th>
                     <th>下载</th>
                 </tr>
-                <tr th:each="file : ${filePojos}">
-                    <td th:text="${file.id}"></td>
+                <tr th:each="file,fileStat : ${filePojos}">
+                    <td th:text="${fileStat.count}"></td>
                     <td th:text="${file.originalFilename}"></td>
                     <td th:text="${file.uploadTime}"></td>
                     <td ><a th:href="@{'/file/download/'+${file.id}}"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>

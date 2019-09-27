@@ -1,6 +1,7 @@
 package com.example.bootstrap.mapper;
 
 import com.example.bootstrap.pojo.User;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -15,4 +16,7 @@ public interface UserMapper {
 
     @Select("select id,username,password,user_token from t_user where user_token = #{userToken}")
     User selectUserToken(String userToken);
+
+    @Insert("insert into t_user (username,password) values(#{username},#{password})")
+    int insertUser(User user);
 }

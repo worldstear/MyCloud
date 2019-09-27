@@ -16,5 +16,5 @@ public interface FileService {
 
     List<FilePojo> selectFileByUsername(String username);
 
-    void downloadFile(Integer fileId, HttpServletResponse response);
+    void downloadFile(Integer fileId, HttpServletResponse response,HttpServletRequest request);
 }

@@ -22,7 +22,7 @@ public class WebAppConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(getLoginInterceptor()).addPathPatterns("/**").
-                excludePathPatterns("/login/**").excludePathPatterns("/js/**","/css/**","/img/**","/fonts/**");
+                excludePathPatterns("/login/**","/register/**").excludePathPatterns("/js/**","/css/**","/img/**","/fonts/**");
     }
 
     @Bean
