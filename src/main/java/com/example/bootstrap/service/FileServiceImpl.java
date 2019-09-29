@@ -2,6 +2,7 @@ package com.example.bootstrap.service;
 
 import com.example.bootstrap.mapper.FileMapper;
 import com.example.bootstrap.pojo.FilePojo;
+import com.example.bootstrap.pojo.FileShare;
 import com.example.bootstrap.pojo.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class FileServiceImpl implements FileService{
@@ -107,5 +107,44 @@ public class FileServiceImpl implements FileService{
                 }
             }
         }
+    }
+
+    @Override
+    public Map<String, String> generateFileShareMap(Integer fileId) {
+        //先查询数据库，若存在该数据则设置密码为新密码
+        String filePassworld = String.valueOf(new Random().nextInt(8999)+1000);
+        String fileUUID = fileMapper.getFileUUIDById(fileId);
+        HashMap<String, String> map = new HashMap<>();
+        map.put(fileUUID,filePassworld);
+
+        FileShare fileShare = new FileShare();
+        fileShare.setFileId(fileId);
+        fileShare.setSharePassword(filePassworld);
+        fileShare.setFileUUID(fileUUID);
+
+        int count = fileMapper.selectFileShareByFileId(fileId);
+        if(count >= 1){//若存在数据则更新
+            fileShare.setGMT_modified(String.valueOf(System.currentTimeMillis()));
+            int resultCount = fileMapper.updateSharePassword(fileShare);
+            if(resultCount > 0){
+                return map;
+            }else {
+                return null;
+            }
+        }else{//若不存在数据则更新
+            fileShare.setGMT_created(String.valueOf(System.currentTimeMillis()));
+            int insertResult = fileMapper.insertFileShare(fileShare);
+            if(insertResult>0){
+                return map;
+            }else {
+                return null;
+            }
+        }
+    }
+
+    @Override
+    public FilePojo selectFileByUUID(String fileUUID) {
+        FilePojo filePojo = fileMapper.selectFileByUUID(fileUUID);
+        return filePojo;
     }
 }

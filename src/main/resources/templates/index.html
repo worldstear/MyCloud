@@ -21,12 +21,14 @@
                     <th>文件名称</th>
                     <th>上传时间</th>
                     <th>下载</th>
+					<th>分享</th>
                 </tr>
                 <tr th:each="file,fileStat : ${filePojos}">
                     <td th:text="${fileStat.count}"></td>
                     <td th:text="${file.originalFilename}"></td>
                     <td th:text="${file.uploadTime}"></td>
                     <td ><a th:href="@{'/file/download/'+${file.id}}"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
+					<td ><a th:href="@{'/file/share/'+${file.id}}"><span class="glyphicon glyphicon-share" aria-hidden="true"></span></a></td>
                 </tr>
             </table>
 		</div>

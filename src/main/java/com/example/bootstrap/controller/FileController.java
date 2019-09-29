@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/file")
@@ -49,5 +50,22 @@ public class FileController {
         response.setContentType("application/octet-stream");
         response.setHeader("content-type", "application/octet-stream");
         fileService.downloadFile(fileId,response,request);
+    }
+
+    @GetMapping("/share/{fileId}")
+    @ResponseBody
+    public Map<String,String> fileShare(@PathVariable("fileId") Integer fileId){
+        //分享链接
+        Map<String,String> shareMap =  fileService.generateFileShareMap(fileId);
+        System.out.println(shareMap);
+        String fileUUID = "";
+        String sharePassword = "";
+        for(Map.Entry<String,String> entry:shareMap.entrySet()){
+            fileUUID = "http://127.0.0.1:8081/share/"+entry.getKey();
+            sharePassword = entry.getValue();
+            shareMap.remove(entry.getKey());
+        }
+        shareMap.put(fileUUID,sharePassword);
+        return shareMap;
     }
 }
