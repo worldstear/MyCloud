@@ -36,6 +36,12 @@ public interface FileMapper {
     @Update("update t_bootstrap_file_share set share_password = #{sharePassword},gmt_modified = #{GMT_modified} where file_id = #{fileId}")
     int updateSharePassword(FileShare fileShare);
 
-    @Select("")
+    @Select("select id,original_filename, file_upload_UUID, upload_user, upload_time, suffix, gmt_created, gmt_modified from t_bootstrap_file_upload where file_upload_UUID = #{fileUUID}")
     FilePojo selectFileByUUID(String fileUUID);
+
+    @Select("select count(1) from t_bootstrap_file_share where file_id = #{fileId} and share_password = #{sharePassword}")
+    Boolean selectFileByFileIdAndSharePassword(FileShare shareFile);
+
+    @Select("select upload_user from t_bootstrap_file_upload where id = #{fileId}")
+    String selectUsernameByFileId(Integer fileId);
 }

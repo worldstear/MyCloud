@@ -75,6 +75,8 @@ public class FileServiceImpl implements FileService{
     @Override
     public void downloadFile(Integer fileId, HttpServletResponse response,HttpServletRequest request) {
         User loginUser = (User)request.getSession().getAttribute("loginUser");
+        //如果无法获取到用户信息则不可下载
+        if(null == loginUser){return;}
         String fileName = fileMapper.getFileNameById(fileId);
         response.setHeader("Content-Disposition", "attachment;fileName=" + fileName);
         File file = new File(fileupload+loginUser.getUsername()+"/"+fileName);
@@ -146,5 +148,17 @@ public class FileServiceImpl implements FileService{
     public FilePojo selectFileByUUID(String fileUUID) {
         FilePojo filePojo = fileMapper.selectFileByUUID(fileUUID);
         return filePojo;
+    }
+
+    @Override
+    public Boolean checkSharePassword(FileShare shareFile) {
+        Boolean isShareCorrect = fileMapper.selectFileByFileIdAndSharePassword(shareFile);
+        System.out.println("isShareCorrect = " + isShareCorrect);
+        return isShareCorrect;
+    }
+
+    @Override
+    public String selectUsernameByFileId(Integer fileId) {
+        return fileMapper.selectUsernameByFileId(fileId);
     }
 }

@@ -10,7 +10,9 @@
 </head>
 <body>
 <form th:action="@{/share/download/}" method="post">
-
+    <a th:text="${file.originalFilename}"></a><br/>
+    <input type="hidden" name="fileId" th:value="${file.id}">
+    <input type="text" name="sharePassword"><br/>
     <button type="submit">下载</button>
 </form>
 </body>

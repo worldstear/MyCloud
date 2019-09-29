@@ -2,6 +2,7 @@ package com.example.bootstrap.service;
 
 
 import com.example.bootstrap.pojo.FilePojo;
+import com.example.bootstrap.pojo.FileShare;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,4 +23,8 @@ public interface FileService {
     Map<String, String> generateFileShareMap(Integer fileId);
 
     FilePojo selectFileByUUID(String fileUUID);
+
+    Boolean checkSharePassword(FileShare shareFile);
+
+    String selectUsernameByFileId(Integer fileId);
 }
