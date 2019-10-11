@@ -23,7 +23,7 @@ public class FileShareController {
     public String getShare(@PathVariable("fileUUID")String fileUUID, Model model){
         FilePojo filePojo = fileService.selectFileByUUID(fileUUID);
         model.addAttribute("file",filePojo);
-        return "/share/download";
+        return "share/download";
     }
 
     @PostMapping("/download")

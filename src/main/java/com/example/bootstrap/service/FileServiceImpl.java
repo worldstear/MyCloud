@@ -37,7 +37,9 @@ public class FileServiceImpl implements FileService{
             File uploadFile = new File(fileupload + user.getUsername() + "/" + fileNameUUID + suffix);
             if(!uploadFile.exists()){
                 if(uploadFile.mkdirs()){
+                    long createdTime = System.currentTimeMillis();
                     file.transferTo(uploadFile);
+                    logger.info("上传花费时长:" + String.valueOf(System.currentTimeMillis()-createdTime));
                     //将上传的文件记录到数据库中
                     FilePojo fileUpload = new FilePojo();
                     fileUpload.setFileUploadUUID(fileNameUUID);
@@ -45,7 +47,6 @@ public class FileServiceImpl implements FileService{
                     fileUpload.setSuffix(suffix);
 
                     fileUpload.setUploadUser(user.getUsername());
-                    long createdTime = System.currentTimeMillis();
                     fileUpload.setUploadTime(new Date(createdTime));
                     fileUpload.setGMT_created(String.valueOf(createdTime));
                     fileMapper.insertNewFile(fileUpload);
@@ -86,11 +87,11 @@ public class FileServiceImpl implements FileService{
         try {
             fis = new FileInputStream(file);
             outputStream = response.getOutputStream();
-            byte[] datas = new byte[1024*1024*512];
+            byte[] datas = new byte[1024];
             while (-1 != fis.read(datas)){
                 outputStream.write(datas);
             }
-
+            outputStream.flush();
         } catch (Exception e) {
             logger.error(e.getMessage());
         }finally {

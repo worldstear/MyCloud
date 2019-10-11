@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -25,10 +26,10 @@ public class UserController {
     public String userLogin(User user, Model model, HttpServletResponse response, HttpServletRequest request){
         User loginUser = userMapper.selectUser(user);
         if(loginUser!=null){
-            setUserTokenCookie(loginUser,request,response);
-            return "redirect:/file/list";
+            userService.setUserTokenCookie(loginUser,request,response);
+            return "redirect:file/list";
         }else{
-            return "/login";
+            return "login";
         }
     }
     @GetMapping("/register")
@@ -39,27 +40,22 @@ public class UserController {
     public String userRgister(User user,HttpServletResponse response,HttpServletRequest request){
        int registerResult =  userService.registerUser(user);
        if(registerResult>0){
-           setUserTokenCookie(user,request,response);
-           return "/index";
+           userService.setUserTokenCookie(user,request,response);
+           return "index";
        }
-       return "redirect:/register";
+       return "redirect:register";
     }
 
-    /**
-     *将登录用户的状态保存到cookie中
-     * @param loginUser
-     * @param request
-     * @param response
-     */
-    private void setUserTokenCookie(User loginUser,HttpServletRequest request,HttpServletResponse response){
-        loginUser = userMapper.selectUser(loginUser);
-        loginUser.setUserToken(UUID.randomUUID().toString());
-        //System.out.println(loginUser);
-        userMapper.updateUserToken(loginUser);
-        //System.out.println(loginUser);
-        Cookie cookie = new Cookie("user_token", loginUser.getUserToken());
-        cookie.setMaxAge(60*60*24*30);
-        response.addCookie(cookie);
-        request.getSession().setAttribute("loginUser",loginUser);
+    @GetMapping("/user/find")
+    public String findUserPage(){
+        return "user/findUser";
+    }
+
+    @PostMapping("/user/find")
+    @ResponseBody
+    public String findUser(String user){
+        User friend = userService.findUserByUserId(user);
+        //给查找到的用户发送消息
+        return "";
     }
 }

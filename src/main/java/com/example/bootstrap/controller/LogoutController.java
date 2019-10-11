@@ -18,6 +18,6 @@ public class LogoutController {
                 break;
             }
         }
-        return "redirect:/login";
+        return "redirect:login";
     }
 }

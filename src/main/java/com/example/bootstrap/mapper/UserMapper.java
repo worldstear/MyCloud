@@ -19,4 +19,7 @@ public interface UserMapper {
 
     @Insert("insert into t_user (username,password) values(#{username},#{password})")
     int insertUser(User user);
+
+    @Select("select id,username,password,user_token from t_user where id = #{userId}")
+    User selectUserByUserId(String userId);
 }

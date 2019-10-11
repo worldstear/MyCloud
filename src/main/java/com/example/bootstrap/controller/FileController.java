@@ -5,8 +5,10 @@ import com.example.bootstrap.pojo.FilePojo;
 import com.example.bootstrap.pojo.User;
 import com.example.bootstrap.service.FileService;
 
+import com.example.bootstrap.utils.IPv4Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +25,7 @@ public class FileController {
 
     @GetMapping("/upload")
     public String getfileUploadPage(){
-        return "/fileUpload";
+        return "fileUpload";
     }
 
     @PostMapping("/upload")
@@ -41,7 +43,7 @@ public class FileController {
         List<FilePojo> filePojos = fileService.selectFileByUsername(username);
         request.setAttribute("filePojos",filePojos);
         //System.out.println(filePojos);
-        return "/index";
+        return "index";
     }
     @GetMapping("/download/{fileId}")
     @ResponseBody
@@ -53,19 +55,22 @@ public class FileController {
     }
 
     @GetMapping("/share/{fileId}")
-    @ResponseBody
-    public Map<String,String> fileShare(@PathVariable("fileId") Integer fileId){
+    public String fileShare(@PathVariable("fileId") Integer fileId, Model model){
         //分享链接
         Map<String,String> shareMap =  fileService.generateFileShareMap(fileId);
-        System.out.println(shareMap);
         String fileUUID = "";
         String sharePassword = "";
         for(Map.Entry<String,String> entry:shareMap.entrySet()){
-            fileUUID = "http://127.0.0.1:8081/share/"+entry.getKey();
+            //本机测试环境
+            // fileUUID = "http://127.0.0.1:8081/share/"+entry.getKey();
+            //局域网测试环境
+           String ipv4 = IPv4Tool.getWLANIPv4Address();
+           fileUUID = ipv4+":8081/share/"+entry.getKey();
             sharePassword = entry.getValue();
             shareMap.remove(entry.getKey());
         }
-        shareMap.put(fileUUID,sharePassword);
-        return shareMap;
+        model.addAttribute("shareUrl",fileUUID);
+        model.addAttribute("sharePassword",sharePassword);
+        return "share/link";
     }
 }

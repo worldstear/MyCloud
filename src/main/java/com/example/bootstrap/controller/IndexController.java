@@ -20,12 +20,12 @@ public class IndexController {
 
     @GetMapping("/")
     public String indexPage(HttpServletRequest request,Model model){
-        return "redirect:/file/list";
+        return "redirect:file/list";
     }
 
     @GetMapping("/index")
     public String getIndexPage(){
-        return "redirect:/file/list";
+        return "redirect:file/list";
     }
 
     @GetMapping("/login")
